@@ -29,6 +29,7 @@ function injectRating(element, professorName, ratingData) {
 
 // Function to find professors on the page and ask the background script for data
 function findAndRateProfessors() {
+    // Using the perfect selector you found!
     const professorElements = document.querySelectorAll('span[data-bind*="text: $data.FacultyName"]'); 
 
     professorElements.forEach(element => {
@@ -42,8 +43,8 @@ function findAndRateProfessors() {
         // Flip "Last, First" into "First Last"
         let searchName = rawName;
         if (rawName.includes(",")) {
-            let parts = rawName.split(","); // Splits into ["Taylor", " Steven J."]
-            searchName = `${parts[1].trim()} ${parts[0].trim()}`; // Recombines into "Steven J. Taylor"
+            let parts = rawName.split(","); 
+            searchName = `${parts[1].trim()} ${parts[0].trim()}`; 
         }
 
         // Send the flipped name to our background.js file
@@ -59,7 +60,6 @@ function findAndRateProfessors() {
 
 // Set up the MutationObserver to watch for dynamically loaded class lists
 const observer = new MutationObserver((mutations) => {
-    // Whenever the page changes, run our search function
     findAndRateProfessors();
 });
 

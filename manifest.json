@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Rate My AU Professors",
+  "version": "1.0",
+  "description": "Displays Rate My Professors ratings directly inside AU Eagle Service.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.american.edu/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://eagleservice.american.edu/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
