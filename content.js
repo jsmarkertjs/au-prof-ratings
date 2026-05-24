@@ -1,5 +1,7 @@
-// A Set to keep track of professors we've already searched to avoid spamming the API
-const processedProfessors = new Set();
+// A memory cache to store ratings so we don't spam the API 
+const ratingCache = {}; 
+// Keep track of who we are currently looking up to prevent race conditions 
+const pendingRequests = new Set();
 
 // Function to inject the rating UI next to the professor's name
 function injectRating(element, professorName, ratingData) {
@@ -13,7 +15,7 @@ function injectRating(element, professorName, ratingData) {
     
     const score = parseFloat(ratingData.avgRating);
     
-    // --- NEW LOGIC: Handle 0 scores or missing data ---
+    // --- NEW LOGIC: Handle 0 scores or missing data 
     if (score === 0 || isNaN(score)) {
         badge.style.backgroundColor = "#7f8c8d"; // Neutral gray
         badge.innerText = "Not Found";
@@ -32,23 +34,15 @@ function injectRating(element, professorName, ratingData) {
 }
 
 // Function to find professors on the page and ask the background script for data
-// Function to find professors on the page and ask the background script for data
 function findAndRateProfessors() {
     const professorElements = document.querySelectorAll('span[data-bind*="text: $data.FacultyName"]'); 
 
     professorElements.forEach(element => {
-        // --- NEW: Check if we already added a badge to THIS specific element ---
+        // Skip if this specific HTML element already has a badge attached
         if (element.classList.contains("rmp-processed")) return;
         
         let rawName = element.innerText.trim();
-        
-        if (!rawName || rawName === "TBD" || rawName.includes("Staff") || processedProfessors.has(rawName)) return;
-        
-        // We only add to the Set to prevent multiple API calls for the SAME name
-        processedProfessors.add(rawName);
-
-        // --- NEW: Mark this element as processed so we don't duplicate badges ---
-        element.classList.add("rmp-processed");
+        if (!rawName || rawName === "TBD" || rawName.includes("Staff")) return;
 
         let searchName = rawName;
         if (rawName.includes(",")) {
@@ -56,12 +50,35 @@ function findAndRateProfessors() {
             searchName = `${parts[1].trim()} ${parts[0].trim()}`; 
         }
 
+        // SCENARIO 1: We already have the score in our cache!
+        if (ratingCache[searchName]) {
+            element.classList.add("rmp-processed"); // Mark HTML as processed
+            injectRating(element, rawName, ratingCache[searchName]); // Inject instantly
+            return;
+        }
+
+        // SCENARIO 2: We are currently waiting for the API to return this score
+        if (pendingRequests.has(searchName)) return;
+
+        // SCENARIO 3: We have never seen this name before, fetch it!
+        pendingRequests.add(searchName);
+        
         chrome.runtime.sendMessage({ action: "fetchRating", name: searchName }, (response) => {
+            pendingRequests.delete(searchName); // Remove from waiting list
+
+            let ratingData;
             if (response && response.success) {
-                injectRating(element, rawName, response.data);
+                ratingData = response.data;
             } else {
-                console.log(`Could not find RMP data for: ${searchName}`);
+                ratingData = { avgRating: 0 }; // Triggers the gray "Not Found" badge
             }
+
+            // Save the newly found data to our local cache
+            ratingCache[searchName] = ratingData;
+
+            // Re-trigger the scanner! 
+            // It will now see Scenario 1 for all instances of this professor.
+            findAndRateProfessors(); 
         });
     });
 }
