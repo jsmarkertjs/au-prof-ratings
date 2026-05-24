@@ -7,7 +7,8 @@
     "storage"
   ],
   "host_permissions": [
-    "https://*.american.edu/*"
+    "https://*.american.edu/*",
+    "https://www.ratemyprofessors.com/*"
   ],
   "background": {
     "service_worker": "background.js"
