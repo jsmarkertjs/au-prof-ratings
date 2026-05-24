@@ -28,26 +28,30 @@ function injectRating(element, professorName, ratingData) {
 }
 
 // Function to find professors on the page and ask the background script for data
+// Function to find professors on the page and ask the background script for data
 function findAndRateProfessors() {
-    // Using the perfect selector you found!
     const professorElements = document.querySelectorAll('span[data-bind*="text: $data.FacultyName"]'); 
 
     professorElements.forEach(element => {
+        // --- NEW: Check if we already added a badge to THIS specific element ---
+        if (element.classList.contains("rmp-processed")) return;
+        
         let rawName = element.innerText.trim();
         
-        // Skip if empty, says "Staff", or we've already processed them
         if (!rawName || rawName === "TBD" || rawName.includes("Staff") || processedProfessors.has(rawName)) return;
         
+        // We only add to the Set to prevent multiple API calls for the SAME name
         processedProfessors.add(rawName);
 
-        // Flip "Last, First" into "First Last"
+        // --- NEW: Mark this element as processed so we don't duplicate badges ---
+        element.classList.add("rmp-processed");
+
         let searchName = rawName;
         if (rawName.includes(",")) {
             let parts = rawName.split(","); 
             searchName = `${parts[1].trim()} ${parts[0].trim()}`; 
         }
 
-        // Send the flipped name to our background.js file
         chrome.runtime.sendMessage({ action: "fetchRating", name: searchName }, (response) => {
             if (response && response.success) {
                 injectRating(element, rawName, response.data);
