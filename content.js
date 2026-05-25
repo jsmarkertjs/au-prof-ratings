@@ -4,7 +4,6 @@ const ratingCache = {};
 const pendingRequests = new Set();
 
 // Function to inject the rating UI next to the professor's name
-// Function to inject the rating UI next to the professor's name
 function injectRating(element, professorName, ratingData) {
     // Remove the original AU "Show Office Hours" tooltip 
     element.removeAttribute("title");
@@ -21,7 +20,7 @@ function injectRating(element, professorName, ratingData) {
         container.style.textDecoration = "none"; 
         container.style.color = "inherit"; 
         
-        // --- NEW: Add your custom tooltip text here ---
+        
         container.title = "Click for Rate My Professors Website";
     }
     
@@ -46,7 +45,7 @@ function injectRating(element, professorName, ratingData) {
         diffBadge.className = "rmp-badge rmp-difficulty";
         diffBadge.innerText = `${ratingData.avgDifficulty} / 5.0 Difficulty`;
 
-        // --- NEW: Difficulty Color Grading (Opposite) ---
+        // Difficulty Color Grading 
         const diffScore = parseFloat(ratingData.avgDifficulty);
         if (diffScore <= 2.5) diffBadge.style.backgroundColor = "#27ae60"; // Green (Easy)
         else if (diffScore <= 3.5) diffBadge.style.backgroundColor = "#f39c12"; // Yellow (Medium)
@@ -56,13 +55,12 @@ function injectRating(element, professorName, ratingData) {
         const tooltip = document.createElement("div");
         tooltip.className = "rmp-tooltip";
         
-        // Tooltip Header & Stats
-        // Tooltip Header & Stats
-        // Tooltip Header & Stats (New Dark Theme Layout)
+    
+        // Tooltip Header & Stats (Dark Theme Layout)
         let tooltipHTML = `
             <div class="rmp-header-stats">
                 <div class="rmp-stat-box">
-                    <div class="rmp-stat-num">${Math.round(ratingData.wouldTakeAgainPercent)}%</div>
+                    <div class="rmp-stat-num">${ratingData.wouldTakeAgainPercent === -1 ? "N/A" : Math.round(ratingData.wouldTakeAgainPercent) + "%"}</div>
                     <div class="rmp-stat-label">Would Take Again</div>
                 </div>
                 <div class="rmp-stat-box right">
@@ -79,14 +77,14 @@ function injectRating(element, professorName, ratingData) {
             // Find the highest vote count to scale the bars properly
             const maxVotes = Math.max(dist.r1, dist.r2, dist.r3, dist.r4, dist.r5, 1); 
 
-            // Create a row for each star rating (5 down to 1)
+            // Create a row for each star rating 
             const starCounts = [dist.r5, dist.r4, dist.r3, dist.r2, dist.r1];
             let starLabel = 5;
 
             starCounts.forEach(count => {
                 const percentOfMax = (count / maxVotes) * 100;
                 
-                // --- NEW: Dynamic Color Grading ---
+                // Dynamic Color Grading 
                 let barColor = "";
                 if (starLabel === 5) barColor = "#07662e";      // Dark Green
                 else if (starLabel === 4) barColor = "#2ecc71"; // Light Green
@@ -94,7 +92,7 @@ function injectRating(element, professorName, ratingData) {
                 else if (starLabel === 2) barColor = "#e67e22"; // Orange
                 else if (starLabel === 1) barColor = "#e74c3c"; // Red
 
-                // We inject the barColor directly into the inline style below
+                // inject the barColor directly into the inline style 
                 tooltipHTML += `
                     <div class="rmp-dist-row">
                         <span>${starLabel} ★</span>
@@ -110,10 +108,10 @@ function injectRating(element, professorName, ratingData) {
 
         tooltip.innerHTML = tooltipHTML;
 
-        // --- NEW: Attach to the BODY of the webpage, escaping all containers! ---
+        
         document.body.appendChild(tooltip);
 
-        // --- NEW: Teleport the tooltip on hover ---
+        // Teleport the tooltip on hover 
         container.addEventListener("mouseenter", () => {
             // Find exactly where the badge is on the screen right now
             const rect = container.getBoundingClientRect();
@@ -157,7 +155,7 @@ function findAndRateProfessors() {
             searchName = `${parts[1].trim()} ${parts[0].trim()}`; 
         }
 
-        // SCENARIO 1: We already have the score in our cache!
+        // SCENARIO 1: We already have the score in our cache
         if (ratingCache[searchName]) {
             element.classList.add("rmp-processed"); // Mark HTML as processed
             injectRating(element, rawName, ratingCache[searchName]); // Inject instantly
@@ -167,7 +165,7 @@ function findAndRateProfessors() {
         // SCENARIO 2: We are currently waiting for the API to return this score
         if (pendingRequests.has(searchName)) return;
 
-        // SCENARIO 3: We have never seen this name before, fetch it!
+        // SCENARIO 3: We have never seen this name before, fetch it
         pendingRequests.add(searchName);
         
         chrome.runtime.sendMessage({ action: "fetchRating", name: searchName }, (response) => {
@@ -183,7 +181,7 @@ function findAndRateProfessors() {
             // Save the newly found data to our local cache
             ratingCache[searchName] = ratingData;
 
-            // Re-trigger the scanner! 
+            // Re-trigger the scanner
             // It will now see Scenario 1 for all instances of this professor.
             findAndRateProfessors(); 
         });
