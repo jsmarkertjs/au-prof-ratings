@@ -7,13 +7,19 @@
 }
 
 /* The visible badges */
+/* The visible badges */
 .rmp-badge {
-    padding: 2px 6px;
+    padding: 3px 8px;      /* Slightly increased padding for breathing room */
     border-radius: 4px;
     font-weight: bold;
     color: white;
-    font-size: 1.05em;
-    cursor: help;
+    font-size: 1.05em;     /* Increased from 0.9em to make it larger */
+    cursor: pointer;
+}
+
+/* Push the difficulty badge away from the quality badge */
+.rmp-difficulty {
+    margin-left: 8px;      /* Creates the empty space between the badges */
 }
 
 
