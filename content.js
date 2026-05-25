@@ -4,33 +4,79 @@ const ratingCache = {};
 const pendingRequests = new Set();
 
 // Function to inject the rating UI next to the professor's name
+// Function to inject the rating UI next to the professor's name
 function injectRating(element, professorName, ratingData) {
-    const badge = document.createElement("span");
-    badge.style.marginLeft = "8px";
-    badge.style.padding = "2px 6px";
-    badge.style.borderRadius = "4px";
-    badge.style.fontWeight = "bold";
-    badge.style.color = "white";
-    badge.style.fontSize = "0.9em";
-    
+    // Create the main container
+    const container = document.createElement("div");
+    container.className = "rmp-container";
+
     const score = parseFloat(ratingData.avgRating);
     
-    // --- NEW LOGIC: Handle 0 scores or missing data 
     if (score === 0 || isNaN(score)) {
-        badge.style.backgroundColor = "#7f8c8d"; // Neutral gray
+        // Not Found State
+        const badge = document.createElement("span");
+        badge.className = "rmp-badge";
+        badge.style.backgroundColor = "#7f8c8d"; 
         badge.innerText = "Not Found";
-        badge.title = "This professor does not have any ratings on Rate My Professors yet.";
+        container.appendChild(badge);
     } else {
-        // Normal color coding for valid scores
-        if (score >= 4.0) badge.style.backgroundColor = "#27ae60"; // Green
-        else if (score >= 3.0) badge.style.backgroundColor = "#f39c12"; // Yellow
-        else badge.style.backgroundColor = "#c0392b"; // Red
+        // Quality Badge
+        const qualityBadge = document.createElement("span");
+        qualityBadge.className = "rmp-badge";
+        if (score >= 4.0) qualityBadge.style.backgroundColor = "#27ae60"; 
+        else if (score >= 3.0) qualityBadge.style.backgroundColor = "#f39c12"; 
+        else qualityBadge.style.backgroundColor = "#c0392b"; 
+        qualityBadge.innerText = `${ratingData.avgRating} / 5.0`;
 
-        badge.innerText = `${ratingData.avgRating} / 5.0`;
-        badge.title = `Difficulty: ${ratingData.avgDifficulty} | Would Take Again: ${ratingData.wouldTakeAgainPercent}% | Based on ${ratingData.numRatings} ratings`;
+        // Difficulty Badge
+        const diffBadge = document.createElement("span");
+        diffBadge.className = "rmp-badge rmp-difficulty";
+        diffBadge.innerText = `${ratingData.avgDifficulty} Diff`;
+
+        // Build the Tooltip Card
+        const tooltip = document.createElement("div");
+        tooltip.className = "rmp-tooltip";
+        
+        // Tooltip Header & Stats
+        let tooltipHTML = `
+            <div class="rmp-tooltip-header">Based on ${ratingData.numRatings} ratings</div>
+            <div class="rmp-stat"><strong>${ratingData.wouldTakeAgainPercent}%</strong> would take again</div>
+            <div style="margin-top: 8px; font-weight: bold; font-size: 12px;">Rating Distribution:</div>
+        `;
+
+        // Calculate and build the distribution bars
+        if (ratingData.ratingsDistribution) {
+            const dist = ratingData.ratingsDistribution;
+            // Find the highest vote count to scale the bars properly
+            const maxVotes = Math.max(dist.r1, dist.r2, dist.r3, dist.r4, dist.r5, 1); 
+
+            // Create a row for each star rating (5 down to 1)
+            const starCounts = [dist.r5, dist.r4, dist.r3, dist.r2, dist.r1];
+            let starLabel = 5;
+
+            starCounts.forEach(count => {
+                const percentOfMax = (count / maxVotes) * 100;
+                tooltipHTML += `
+                    <div class="rmp-dist-row">
+                        <span>${starLabel} ★</span>
+                        <div class="rmp-bar-bg"><div class="rmp-bar-fill" style="width: ${percentOfMax}%"></div></div>
+                        <span style="width: 20px; text-align: right;">${count}</span>
+                    </div>
+                `;
+                starLabel--;
+            });
+        }
+
+        tooltip.innerHTML = tooltipHTML;
+
+        // Add everything into the container
+        container.appendChild(qualityBadge);
+        container.appendChild(diffBadge);
+        container.appendChild(tooltip);
     }
 
-    element.appendChild(badge);
+    // Append the entire container right next to the professor's name
+    element.appendChild(container);
 }
 
 // Function to find professors on the page and ask the background script for data

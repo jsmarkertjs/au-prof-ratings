@@ -1,0 +1,85 @@
+/* The main wrapper next to the professor's name */
+.rmp-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 8px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* The visible badges */
+.rmp-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+    font-size: 0.9em;
+    cursor: help;
+}
+
+.rmp-difficulty {
+    background-color: #34495e; /* Sleek dark gray */
+    margin-left: 4px;
+}
+
+/* The hidden pop-up card */
+.rmp-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 120%; /* Position above the badges */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    background-color: white;
+    color: #333;
+    text-align: left;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    transition: opacity 0.2s, visibility 0.2s;
+    border: 1px solid #e0e0e0;
+}
+
+/* Show the card when hovering over the container */
+.rmp-container:hover .rmp-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Styling inside the pop-up card */
+.rmp-tooltip-header {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+}
+
+.rmp-stat {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+/* The distribution bar chart */
+.rmp-dist-row {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.rmp-bar-bg {
+    flex-grow: 1;
+    background-color: #eee;
+    height: 8px;
+    border-radius: 4px;
+    margin: 0 6px;
+    overflow: hidden;
+}
+
+.rmp-bar-fill {
+    height: 100%;
+    background-color: #3498db;
+    border-radius: 4px;
+}
