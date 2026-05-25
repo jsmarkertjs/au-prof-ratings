@@ -46,7 +46,7 @@ function injectRating(element, professorName, ratingData) {
         // Tooltip Header & Stats
         let tooltipHTML = `
             <div class="rmp-tooltip-header">Based on ${ratingData.numRatings} ratings</div>
-            <div class="rmp-stat"><strong>${ratingData.wouldTakeAgainPercent}%</strong> would take again</div>
+            <div class="rmp-stat"><strong>${Math.round(ratingData.wouldTakeAgainPercent)}%</strong> would take again</div>
             <div style="margin-top: 8px; font-weight: bold; font-size: 12px;">Rating Distribution:</div>
         `;
 
