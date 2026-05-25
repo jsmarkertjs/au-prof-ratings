@@ -33,6 +33,12 @@ function injectRating(element, professorName, ratingData) {
         diffBadge.className = "rmp-badge rmp-difficulty";
         diffBadge.innerText = `${ratingData.avgDifficulty} / 5.0 Difficulty`;
 
+        // --- NEW: Difficulty Color Grading (Opposite) ---
+        const diffScore = parseFloat(ratingData.avgDifficulty);
+        if (diffScore <= 2.5) diffBadge.style.backgroundColor = "#27ae60"; // Green (Easy)
+        else if (diffScore <= 3.5) diffBadge.style.backgroundColor = "#f39c12"; // Yellow (Medium)
+        else diffBadge.style.backgroundColor = "#c0392b"; // Red (Hard)
+
         // Build the Tooltip Card
         const tooltip = document.createElement("div");
         tooltip.className = "rmp-tooltip";
