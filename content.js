@@ -84,7 +84,7 @@ function injectRating(element, professorName, ratingData) {
                 
                 // --- NEW: Dynamic Color Grading ---
                 let barColor = "";
-                if (starLabel === 5) barColor = "#27ae60";      // Dark Green
+                if (starLabel === 5) barColor = "#07662e";      // Dark Green
                 else if (starLabel === 4) barColor = "#2ecc71"; // Light Green
                 else if (starLabel === 3) barColor = "#f1c40f"; // Yellow
                 else if (starLabel === 2) barColor = "#e67e22"; // Orange
