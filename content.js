@@ -6,93 +6,78 @@ const pendingRequests = new Set();
 // Function to inject the rating UI next to the professor's name
 // Function to inject the rating UI next to the professor's name
 function injectRating(element, professorName, ratingData) {
-    const badge = document.createElement("span");
-    badge.style.marginLeft = "8px";
-    badge.style.padding = "2px 6px";
-    badge.style.borderRadius = "4px";
-    badge.style.fontWeight = "bold";
-    badge.style.color = "white";
-    badge.style.fontSize = "0.9em";
-    
-    // Parse the scores as floats
-    const score = parseFloat(ratingData.avgRating);
-    const diffScore = parseFloat(ratingData.avgDifficulty);
-    
-    // --- NEW LOGIC: Apply Opposite Color Grading to Difficulty ---
-    
-    // Quality Rating (Standard: Higher is Green)
-    if (score >= 4.0) badge.style.backgroundColor = "#27ae60"; // Green
-    else if (score >= 3.0) badge.style.backgroundColor = "#f39c12"; // Yellow
-    else badge.style.backgroundColor = "#c0392b"; // Red
-
-    badge.innerText = `${ratingData.avgRating} / 5.0`;
-    
-    // Difficulty Rating (Opposite: Lower is Green)
-    const diffBadge = document.createElement("span");
-    diffBadge.style.marginLeft = "4px";
-    diffBadge.style.padding = "2px 6px";
-    diffBadge.style.borderRadius = "4px";
-    diffBadge.style.fontWeight = "bold";
-    diffBadge.style.color = "white";
-    diffBadge.style.fontSize = "0.9em";
-    diffBadge.innerText = `${ratingData.avgDifficulty} Diff`;
-
-    // Green (Easy): 1.0 - 2.5
-    if (diffScore <= 2.5) diffBadge.style.backgroundColor = "#27ae60"; 
-    // Yellow (Medium): 2.6 - 3.5
-    else if (diffScore <= 3.5) diffBadge.style.backgroundColor = "#f39c12";
-    // Red (Hard): 3.6 - 5.0
-    else diffBadge.style.backgroundColor = "#c0392b"; 
-
-    // Create the tooltip card
-    const tooltip = document.createElement("div");
-    tooltip.style.position = "absolute";
-    tooltip.style.backgroundColor = "#fff";
-    tooltip.style.color = "#333";
-    tooltip.style.border = "1px solid #ccc";
-    tooltip.style.padding = "10px";
-    tooltip.style.borderRadius = "5px";
-    tooltip.style.width = "250px";
-    tooltip.style.boxShadow = "0 2px 10px rgba(0,0,0,0.2)";
-    tooltip.style.zIndex = "100";
-    tooltip.style.display = "none";
-    tooltip.style.left = "50px";
-    tooltip.style.top = "-50px";
-    tooltip.innerHTML = `
-        <h3>David L. Barker</h3>
-        <p>Quality: ${ratingData.avgRating}/5</p>
-        <p>Difficulty: ${ratingData.avgDifficulty}/5</p>
-        <p>Would Take Again: ${ratingData.wouldTakeAgainPercent}%</p>
-        <p>Total Ratings: ${ratingData.numRatings}</p>
-        <h4>Rating Distribution</h4>
-        <p>5 star: ${ratingData.ratingsDistribution.r5}</p>
-        <p>4 star: ${ratingData.ratingsDistribution.r4}</p>
-        <p>3 star: ${ratingData.ratingsDistribution.r3}</p>
-        <p>2 star: ${ratingData.ratingsDistribution.r2}</p>
-        <p>1 star: ${ratingData.ratingsDistribution.r1}</p>
-    `;
-
-    // Create a container for everything
+    // Create the main container
     const container = document.createElement("div");
-    container.style.display = "inline-block";
-    container.style.position = "relative";
-    container.appendChild(badge);
-    container.appendChild(diffBadge);
-    container.appendChild(tooltip);
+    container.className = "rmp-container";
 
-    // Show tooltip on hover
-    container.addEventListener("mouseenter", () => {
-        tooltip.style.display = "block";
-    });
-    // Hide tooltip on mouse leave
-    container.addEventListener("mouseleave", () => {
-        tooltip.style.display = "none";
-    });
+    const score = parseFloat(ratingData.avgRating);
+    
+    if (score === 0 || isNaN(score)) {
+        // Not Found State
+        const badge = document.createElement("span");
+        badge.className = "rmp-badge";
+        badge.style.backgroundColor = "#7f8c8d"; 
+        badge.innerText = "Not Found";
+        container.appendChild(badge);
+    } else {
+        // Quality Badge
+        const qualityBadge = document.createElement("span");
+        qualityBadge.className = "rmp-badge";
+        if (score >= 4.0) qualityBadge.style.backgroundColor = "#27ae60"; 
+        else if (score >= 3.0) qualityBadge.style.backgroundColor = "#f39c12"; 
+        else qualityBadge.style.backgroundColor = "#c0392b"; 
+        qualityBadge.innerText = `${ratingData.avgRating} / 5.0 Quality`; 
 
+        // Difficulty Badge
+        const diffBadge = document.createElement("span");
+        diffBadge.className = "rmp-badge rmp-difficulty";
+        diffBadge.innerText = `${ratingData.avgDifficulty} / 5.0 Difficulty`;
+
+        // Build the Tooltip Card
+        const tooltip = document.createElement("div");
+        tooltip.className = "rmp-tooltip";
+        
+        // Tooltip Header & Stats
+        let tooltipHTML = `
+            <div class="rmp-tooltip-header">Based on ${ratingData.numRatings} ratings</div>
+            <div class="rmp-stat"><strong>${ratingData.wouldTakeAgainPercent}%</strong> would take again</div>
+            <div style="margin-top: 8px; font-weight: bold; font-size: 12px;">Rating Distribution:</div>
+        `;
+
+        // Calculate and build the distribution bars
+        if (ratingData.ratingsDistribution) {
+            const dist = ratingData.ratingsDistribution;
+            // Find the highest vote count to scale the bars properly
+            const maxVotes = Math.max(dist.r1, dist.r2, dist.r3, dist.r4, dist.r5, 1); 
+
+            // Create a row for each star rating (5 down to 1)
+            const starCounts = [dist.r5, dist.r4, dist.r3, dist.r2, dist.r1];
+            let starLabel = 5;
+
+            starCounts.forEach(count => {
+                const percentOfMax = (count / maxVotes) * 100;
+                tooltipHTML += `
+                    <div class="rmp-dist-row">
+                        <span>${starLabel} ★</span>
+                        <div class="rmp-bar-bg"><div class="rmp-bar-fill" style="width: ${percentOfMax}%"></div></div>
+                        <span style="width: 20px; text-align: right;">${count}</span>
+                    </div>
+                `;
+                starLabel--;
+            });
+        }
+
+        tooltip.innerHTML = tooltipHTML;
+
+        // Add everything into the container
+        container.appendChild(qualityBadge);
+        container.appendChild(diffBadge);
+        container.appendChild(tooltip);
+    }
+
+    // Append the entire container right next to the professor's name
     element.appendChild(container);
 }
-
-// --- REST OF content.js (MutationObserver logic, etc.) ---
 
 // Function to find professors on the page and ask the background script for data
 function findAndRateProfessors() {
