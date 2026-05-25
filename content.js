@@ -26,12 +26,12 @@ function injectRating(element, professorName, ratingData) {
         if (score >= 4.0) qualityBadge.style.backgroundColor = "#27ae60"; 
         else if (score >= 3.0) qualityBadge.style.backgroundColor = "#f39c12"; 
         else qualityBadge.style.backgroundColor = "#c0392b"; 
-        qualityBadge.innerText = `${ratingData.avgRating} / 5.0`;
+        qualityBadge.innerText = `${ratingData.avgRating} / 5.0 Quality`; 
 
         // Difficulty Badge
         const diffBadge = document.createElement("span");
         diffBadge.className = "rmp-badge rmp-difficulty";
-        diffBadge.innerText = `${ratingData.avgDifficulty} Diff`;
+        diffBadge.innerText = `${ratingData.avgDifficulty} / 5.0 Difficulty`;
 
         // Build the Tooltip Card
         const tooltip = document.createElement("div");
