@@ -108,10 +108,32 @@ function injectRating(element, professorName, ratingData) {
 
         tooltip.innerHTML = tooltipHTML;
 
-        // Add everything into the container
+        tooltip.innerHTML = tooltipHTML;
+
+        // --- NEW: Attach to the BODY of the webpage, escaping all containers! ---
+        document.body.appendChild(tooltip);
+
+        // --- NEW: Teleport the tooltip on hover ---
+        container.addEventListener("mouseenter", () => {
+            // Find exactly where the badge is on the screen right now
+            const rect = container.getBoundingClientRect();
+            
+            // Calculate X/Y coordinates (including if the user has scrolled down)
+            tooltip.style.left = `${rect.left + (rect.width / 2) + window.scrollX}px`;
+            tooltip.style.top = `${rect.top + window.scrollY}px`;
+            
+            // Turn it on
+            tooltip.classList.add("visible");
+        });
+
+        // Hide it when the mouse leaves
+        container.addEventListener("mouseleave", () => {
+            tooltip.classList.remove("visible");
+        });
+
+        // Add the badges to the container (BUT NOT THE TOOLTIP)
         container.appendChild(qualityBadge);
         container.appendChild(diffBadge);
-        container.appendChild(tooltip);
     }
 
     // Append the entire container right next to the professor's name

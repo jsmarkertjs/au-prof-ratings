@@ -24,28 +24,28 @@
 
 
 
-/* The hidden pop-up card (Dark Theme) */
+/* The hidden pop-up card (Body Appended) */
 .rmp-tooltip {
     visibility: hidden;
     opacity: 0;
-    position: absolute;
-    top: 140%; /* FLIPPED: This makes it drop down below the badges */
-    left: 50%;
-    transform: translateX(-50%);
+    position: absolute; 
+    transform: translate(-50%, -100%); 
+    margin-top: -10px; 
     width: 260px; 
     background-color: #282a36; 
     color: #f8f8f2; 
     text-align: left;
     border-radius: 8px;
     padding: 16px;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.6); /* Slightly stronger shadow */
-    z-index: 999999 !important; /* Forces it to the absolute front */
+    box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.6); 
+    z-index: 999999 !important; 
     transition: opacity 0.2s, visibility 0.2s;
     border: 1px solid #44475a;
+    pointer-events: none; 
 }
 
-/* Show the card when hovering */
-.rmp-container:hover .rmp-tooltip {
+
+.rmp-tooltip.visible {
     visibility: visible;
     opacity: 1;
 }
