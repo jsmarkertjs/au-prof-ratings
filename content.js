@@ -6,19 +6,23 @@ const pendingRequests = new Set();
 // Function to inject the rating UI next to the professor's name
 // Function to inject the rating UI next to the professor's name
 function injectRating(element, professorName, ratingData) {
+    // Remove the original AU "Show Office Hours" tooltip 
+    element.removeAttribute("title");
+
     const score = parseFloat(ratingData.avgRating);
     const isFound = !(score === 0 || isNaN(score));
 
-    // --- NEW: If found, make it a clickable link. If not, keep it a standard div ---
     const container = document.createElement(isFound ? "a" : "div");
     container.className = "rmp-container";
 
     if (isFound) {
-        // Build the URL using the legacyId we just grabbed
         container.href = `https://www.ratemyprofessors.com/professor/${ratingData.legacyId}`;
-        container.target = "_blank"; // Forces the link to open in a new tab
-        container.style.textDecoration = "none"; // Stops Chrome from adding an ugly blue underline
+        container.target = "_blank"; 
+        container.style.textDecoration = "none"; 
         container.style.color = "inherit"; 
+        
+        // --- NEW: Add your custom tooltip text here ---
+        container.title = "Click for Rate My Professors Website";
     }
     
     if (!isFound) {
