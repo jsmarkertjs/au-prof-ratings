@@ -53,10 +53,20 @@ function injectRating(element, professorName, ratingData) {
         tooltip.className = "rmp-tooltip";
         
         // Tooltip Header & Stats
+        // Tooltip Header & Stats
+        // Tooltip Header & Stats (New Dark Theme Layout)
         let tooltipHTML = `
-            <div class="rmp-tooltip-header">Based on ${ratingData.numRatings} ratings</div>
-            <div class="rmp-stat"><strong>${Math.round(ratingData.wouldTakeAgainPercent)}%</strong> would take again</div>
-            <div style="margin-top: 8px; font-weight: bold; font-size: 12px;">Rating Distribution:</div>
+            <div class="rmp-header-stats">
+                <div class="rmp-stat-box">
+                    <div class="rmp-stat-num">${Math.round(ratingData.wouldTakeAgainPercent)}%</div>
+                    <div class="rmp-stat-label">Would Take Again</div>
+                </div>
+                <div class="rmp-stat-box right">
+                    <div class="rmp-stat-num">${ratingData.numRatings}</div>
+                    <div class="rmp-stat-label">Total Ratings</div>
+                </div>
+            </div>
+            <div class="rmp-divider"></div>
         `;
 
         // Calculate and build the distribution bars
