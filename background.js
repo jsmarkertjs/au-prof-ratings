@@ -13,6 +13,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             edges {
               node {
                 id
+                legacyId
                 firstName
                 lastName
                 avgRating

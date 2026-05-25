@@ -6,13 +6,22 @@ const pendingRequests = new Set();
 // Function to inject the rating UI next to the professor's name
 // Function to inject the rating UI next to the professor's name
 function injectRating(element, professorName, ratingData) {
-    // Create the main container
-    const container = document.createElement("div");
+    const score = parseFloat(ratingData.avgRating);
+    const isFound = !(score === 0 || isNaN(score));
+
+    // --- NEW: If found, make it a clickable link. If not, keep it a standard div ---
+    const container = document.createElement(isFound ? "a" : "div");
     container.className = "rmp-container";
 
-    const score = parseFloat(ratingData.avgRating);
+    if (isFound) {
+        // Build the URL using the legacyId we just grabbed
+        container.href = `https://www.ratemyprofessors.com/professor/${ratingData.legacyId}`;
+        container.target = "_blank"; // Forces the link to open in a new tab
+        container.style.textDecoration = "none"; // Stops Chrome from adding an ugly blue underline
+        container.style.color = "inherit"; 
+    }
     
-    if (score === 0 || isNaN(score)) {
+    if (!isFound) {
         // Not Found State
         const badge = document.createElement("span");
         badge.className = "rmp-badge";
