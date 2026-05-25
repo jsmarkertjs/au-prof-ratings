@@ -71,10 +71,20 @@ function injectRating(element, professorName, ratingData) {
 
             starCounts.forEach(count => {
                 const percentOfMax = (count / maxVotes) * 100;
+                
+                // --- NEW: Dynamic Color Grading ---
+                let barColor = "";
+                if (starLabel === 5) barColor = "#27ae60";      // Dark Green
+                else if (starLabel === 4) barColor = "#2ecc71"; // Light Green
+                else if (starLabel === 3) barColor = "#f1c40f"; // Yellow
+                else if (starLabel === 2) barColor = "#e67e22"; // Orange
+                else if (starLabel === 1) barColor = "#e74c3c"; // Red
+
+                // We inject the barColor directly into the inline style below
                 tooltipHTML += `
                     <div class="rmp-dist-row">
                         <span>${starLabel} ★</span>
-                        <div class="rmp-bar-bg"><div class="rmp-bar-fill" style="width: ${percentOfMax}%"></div></div>
+                        <div class="rmp-bar-bg"><div class="rmp-bar-fill" style="width: ${percentOfMax}%; background-color: ${barColor};"></div></div>
                         <span style="width: 20px; text-align: right;">${count}</span>
                     </div>
                 `;

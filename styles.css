@@ -16,10 +16,7 @@
     cursor: help;
 }
 
-.rmp-difficulty {
-    background-color: #34495e; /* Sleek dark gray */
-    margin-left: 4px;
-}
+
 
 /* The hidden pop-up card */
 .rmp-tooltip {
@@ -80,6 +77,5 @@
 
 .rmp-bar-fill {
     height: 100%;
-    background-color: #3498db;
     border-radius: 4px;
 }
