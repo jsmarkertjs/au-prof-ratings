@@ -1,11 +1,12 @@
 /* The main wrapper next to the professor's name */
+/* The main wrapper next to the professor's name */
 .rmp-container {
     position: relative;
-    display: inline-block;
-    margin-left: 8px;
+    display: block; 
+    margin-top: 4px; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
 }
-
 /* The visible badges */
 /* The visible badges */
 .rmp-badge {
