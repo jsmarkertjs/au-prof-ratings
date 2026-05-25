@@ -19,6 +19,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 numRatings
                 wouldTakeAgainPercent
                 avgDifficulty
+                ratingsDistribution {
+                  r1
+                  r2
+                  r3
+                  r4
+                  r5
+                }
               }
             }
           }
